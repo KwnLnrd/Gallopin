@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
-import google.generativeai as genai
+from openai import OpenAI
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -20,14 +20,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///gallopin.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- Configuration de l'API Generative AI ---
-# Assurez-vous que votre clé API est dans le fichier .env
+# --- Configuration de l'API OpenAI ---
+# Assurez-vous que votre clé API est dans le fichier .env ou dans les variables d'environnement de Render
 try:
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-    model = genai.GenerativeModel('gemini-1.0-pro-latest')
-except KeyError:
-    print("ERREUR: La variable d'environnement GEMINI_API_KEY n'est pas définie.")
-    model = None # Le modèle ne sera pas disponible
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+except Exception as e:
+    print(f"ERREUR: Impossible d'initialiser le client OpenAI. Assurez-vous que la variable d'environnement OPENAI_API_KEY est définie. Erreur: {e}")
+    client = None
 
 # --- Modèles de base de données ---
 
@@ -72,15 +71,15 @@ def get_flavor_options():
 
 @app.route('/generate-review', methods=['POST'])
 def generate_review_route():
-    """ Génère un avis client en utilisant l'IA. """
-    if not model:
-        return jsonify({"error": "Le modèle Generative AI n'est pas configuré."}), 500
+    """ Génère un avis client en utilisant l'IA d'OpenAI. """
+    if not client:
+        return jsonify({"error": "Le client OpenAI n'est pas configuré."}), 500
 
     data = request.json
     selected_flavors = data.get('flavors', [])
     selected_tags = data.get('tags', [])
     rating = data.get('rating')
-    custom_notes = data.get('customNotes', '')
+    custom_notes = data.get('customNotes', '') # On garde cette variable même si le front ne l'envoie pas
 
     # Mettre à jour le compteur pour chaque plat sélectionné
     for flavor_text in selected_flavors:
@@ -94,7 +93,7 @@ def generate_review_route():
                 db.session.add(selection)
     db.session.commit()
 
-    # Construction du prompt pour la brasserie Gallopin
+    # Construction du prompt pour ChatGPT
     prompt_text = f"""
     Rédige un avis client authentique et élégant pour Gallopin, une brasserie parisienne historique et raffinée fondée en 1876.
     Le ton doit être celui d'un client satisfait qui partage une expérience mémorable.
@@ -115,12 +114,17 @@ def generate_review_route():
     """
 
     try:
-        response = model.generate_content(prompt_text)
-        # S'assurer que l'on accède correctement au texte généré
-        review_text = response.text if hasattr(response, 'text') else response.parts[0].text
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es un assistant de rédaction d'avis pour Gallopin, une brasserie parisienne de luxe. Rédige des avis authentiques et élégants en français."},
+                {"role": "user", "content": prompt_text}
+            ]
+        )
+        review_text = completion.choices[0].message.content
         return jsonify({'review': review_text})
     except Exception as e:
-        return jsonify({"error": f"Erreur lors de la génération de l'avis : {str(e)}"}), 500
+        return jsonify({"error": f"Erreur lors de la génération de l'avis avec OpenAI : {str(e)}"}), 500
 
 
 @app.route('/submit-feedback', methods=['POST'])
