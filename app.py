@@ -22,7 +22,6 @@ CORS(app, supports_credentials=True)
 
 # --- CONFIGURATION DE LA SÉCURITÉ (JWT) ---
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "une-super-cle-secrete-pour-le-developpement-gallopin")
-# Mot de passe pour le dashboard mis à jour pour Gallopin
 DASHBOARD_PASSWORD = "GallopinDashboard2025!"
 
 jwt = JWTManager(app)
@@ -38,13 +37,12 @@ limiter = Limiter(
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # --- CONFIGURATION DE LA BASE DE DONNÉES ---
-# Mise à jour de l'URL de la base de données pour Gallopin
 database_url = "postgresql://gallopin_db_user:c3aa63Gd8HOfNrrF2tZlKeG7GCHgfFps@dpg-d2fjn5emcj7s73euk0b0-a/gallopin_db"
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- MODÈLES DE LA BASE DE DONNÉES (inchangés) ---
+# --- MODÈLES DE LA BASE DE DONNÉES ---
 class GeneratedReview(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_name = db.Column(db.String(80), nullable=False, index=True)
@@ -84,49 +82,22 @@ class QualitativeFeedback(db.Model):
 
 # --- INITIALISATION ET PEUPLEMENT DE LA BASE DE DONNÉES ---
 def seed_database():
-    """Peuple la base de données avec le menu de Gallopin si elle est vide."""
-    if FlavorOption.query.first() is not None:
-        print("La table FlavorOption contient déjà des données. Le peuplement est ignoré.")
-        return
-
-    print("La table FlavorOption est vide. Peuplement avec le menu Gallopin...")
-    
+    if FlavorOption.query.first() is not None: return
     menu_gallopin = {
-        "Entrées": [
-            "Burrata aubergine / Burrata di Parme", "Œuf cassé aux girolles", 
-            "Petits violets à cru au parmesan", "Les six Gros escargots de Bourgogne", 
-            "Œufs bio mayo", "Moules gratinées", "Nems au poulet", "Carpaccio de Daurade", 
-            "Avocat thon épicé", "Calamars creamy spicy", "Cœur de Saumon blinis", "Pizza Truffes"
-        ],
-        "Plats": [
-            "Risotto aux cêpes", "Paccheri aux morilles", "Gratin de ravioles", 
-            "Le foie de veau du GALLOPIN", "Cabillaud creamy spicy", "Saumon miso", 
-            "Daurade Royale au four", "La sole", "Agneau en petites côtelettes", 
-            "Tartare Brasserie", "Le Poivre dans le filet ou Béarnaise", 
-            "Coquelet Roti", "Classique escalope de veau"
-        ],
-        "Desserts": [
-            "Saint Marcellin", "Pruneaux à l'Armagnac", "Omelette Norvégienne", 
-            "Tarte fine aux pommes", "Fraises & Framboises chantilly", 
-            "Pavlova aux fruits rouges", "L'énorme crème caramel", "Ile flottante", 
-            "Tartelette citron", "Mousse au chocolat", "La fameuse Brioche retrouvée", 
-            "Baba au Rhum", "Profiteroles", "Glaces et sorbets"
-        ]
+        "Entrées": ["Burrata aubergine / Burrata di Parme", "Œuf cassé aux girolles", "Petits violets à cru au parmesan", "Les six Gros escargots de Bourgogne", "Œufs bio mayo", "Moules gratinées", "Nems au poulet", "Carpaccio de Daurade", "Avocat thon épicé", "Calamars creamy spicy", "Cœur de Saumon blinis", "Pizza Truffes"],
+        "Plats": ["Risotto aux cêpes", "Paccheri aux morilles", "Gratin de ravioles", "Le foie de veau du GALLOPIN", "Cabillaud creamy spicy", "Saumon miso", "Daurade Royale au four", "La sole", "Agneau en petites côtelettes", "Tartare Brasserie", "Le Poivre dans le filet ou Béarnaise", "Coquelet Roti", "Classique escalope de veau"],
+        "Desserts": ["Saint Marcellin", "Pruneaux à l'Armagnac", "Omelette Norvégienne", "Tarte fine aux pommes", "Fraises & Framboises chantilly", "Pavlova aux fruits rouges", "L'énorme crème caramel", "Ile flottante", "Tartelette citron", "Mousse au chocolat", "La fameuse Brioche retrouvée", "Baba au Rhum", "Profiteroles", "Glaces et sorbets"]
     }
-
     for category, dishes in menu_gallopin.items():
         for dish_name in dishes:
-            new_dish = FlavorOption(text=dish_name.strip(), category=category)
-            db.session.add(new_dish)
-    
+            db.session.add(FlavorOption(text=dish_name.strip(), category=category))
     db.session.commit()
-    print("Base de données peuplée avec succès.")
 
 with app.app_context():
     db.create_all()
     seed_database()
 
-# --- ROUTE DE LOGIN ---
+# --- ROUTES API (Login, Gestion, Publique) ---
 @app.route("/api/login", methods=["POST"])
 @limiter.limit("10 per minute")
 def login():
@@ -134,10 +105,9 @@ def login():
     password = request.json.get("password", None)
     if username != "admin" or password != DASHBOARD_PASSWORD:
         return jsonify({"msg": "Bad username or password"}), 401
-    access_token = create_access_token(identity=username)
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=create_access_token(identity=username))
 
-# --- ROUTES DE GESTION (protégées) ---
+# ... (Les autres routes de gestion restent identiques) ...
 @app.route('/api/servers', methods=['GET', 'POST'])
 @jwt_required()
 def manage_servers():
@@ -198,7 +168,6 @@ def handle_flavor(option_id):
         db.session.commit()
         return jsonify({"success": True})
 
-# --- ROUTES API PUBLIQUES ---
 @app.route('/api/public/data', methods=['GET'])
 def get_public_data():
     try:
@@ -215,10 +184,8 @@ def get_public_data():
         }
         return jsonify(data)
     except Exception as e:
-        print(f"Erreur lors de la récupération des données publiques : {e}")
         return jsonify({"error": "Impossible de charger les données de configuration."}), 500
 
-# --- ROUTE DE GÉNÉRATION D'AVIS ---
 @app.route('/generate-review', methods=['POST'])
 def generate_review():
     data = request.get_json()
@@ -237,54 +204,36 @@ def generate_review():
     details = {}
     dish_selections = []
     
-    qualitative_categories = ['service_qualities', 'atmosphere', 'reason_for_visit', 'quick_highlight']
     for tag in tags:
-        category = tag.get('category')
-        value = tag.get('value')
-        if category in qualitative_categories and value:
+        category, value = tag.get('category'), tag.get('value')
+        if category in ['service_qualities', 'atmosphere', 'reason_for_visit', 'quick_highlight'] and value:
             db.session.add(QualitativeFeedback(category=category, value=value))
-        
         if category and value:
             if category not in details: details[category] = []
             details[category].append(value)
-            
             if category == 'dish':
                 flavor_option = FlavorOption.query.filter_by(text=value).first()
-                if flavor_option:
-                    dish_selections.append({"name": value, "category": flavor_option.category})
+                if flavor_option: dish_selections.append({"name": value, "category": flavor_option.category})
 
     server_name = details.get('server_name', [None])[0]
-
     if has_private_feedback:
         server_id = None
         if server_name:
             server_obj = Server.query.filter_by(name=server_name).first()
             if server_obj: server_id = server_obj.id
         db.session.add(InternalFeedback(feedback_text=private_feedback, associated_server_id=server_id))
-
-    if server_name:
-        db.session.add(GeneratedReview(server_name=server_name))
-
-    for dish in dish_selections:
-        db.session.add(MenuSelection(dish_name=dish['name'], dish_category=dish['category']))
+    if server_name: db.session.add(GeneratedReview(server_name=server_name))
+    for dish in dish_selections: db.session.add(MenuSelection(dish_name=dish['name'], dish_category=dish['category']))
 
     try:
         db.session.commit()
-        
-        if not has_public_review_data:
-            return jsonify({"message": "Feedback enregistré avec succès."})
+        if not has_public_review_data: return jsonify({"message": "Feedback enregistré."})
 
-        # Mise à jour du prompt pour Gallopin
         prompt_text = f"Rédige un avis client positif et chaleureux pour la brasserie parisienne Gallopin, en langue '{lang}'. L'avis doit sembler authentique et personnel. Incorpore les éléments suivants de manière naturelle:\n"
-        
         for category, values in details.items():
-            if category != 'server_name':
-                prompt_text += f"- {category}: {', '.join(values)}\n"
-        
-        if server_name:
-            prompt_text += f"\nL'avis doit mentionner le service impeccable de {server_name}.\n"
-
-        prompt_text += "\nL'avis doit faire environ 4-6 phrases. Varie le style pour ne pas être répétitif."
+            if category != 'server_name': prompt_text += f"- {category}: {', '.join(values)}\n"
+        if server_name: prompt_text += f"\nL'avis doit mentionner le service impeccable de {server_name}.\n"
+        prompt_text += "\nL'avis doit faire environ 4-6 phrases."
 
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -292,21 +241,15 @@ def generate_review():
                 {"role": "system", "content": "Tu es un assistant de rédaction spécialisé dans les avis de restaurants."},
                 {"role": "user", "content": prompt_text}
             ],
-            temperature=0.7,
-            max_tokens=200
+            temperature=0.7, max_tokens=200
         )
-        review = completion.choices[0].message.content
-        return jsonify({"review": review.strip()})
+        return jsonify({"review": completion.choices[0].message.content.strip()})
     except Exception as e:
         db.session.rollback()
-        print(f"Erreur OpenAI ou DB: {e}")
-        traceback.print_exc()
-        return jsonify({"error": "Désolé, une erreur est survenue lors de la génération de l'avis."}), 500
+        return jsonify({"error": "Erreur lors de la génération de l'avis."}), 500
 
-# --- ROUTES DU DASHBOARD (protégées) ---
-# Le reste des routes du dashboard reste fonctionnellement identique,
-# elles liront simplement les nouvelles données de la base Gallopin.
-
+# --- ROUTES DU DASHBOARD ---
+# ... (Les autres routes du dashboard restent identiques) ...
 @app.route('/api/server-stats')
 @jwt_required()
 def server_stats():
@@ -323,7 +266,6 @@ def server_stats():
         ranking_results = query.group_by(GeneratedReview.server_name).order_by(desc('review_count')).all()
         return jsonify([{"server": server, "count": count} for server, count in ranking_results])
     except Exception as e:
-        print(f"Erreur dashboard (stats serveurs): {e}")
         return jsonify({"error": "Impossible de charger les statistiques."}), 500
 
 @app.route('/dashboard')
@@ -365,7 +307,6 @@ def dashboard_data():
             "trend": trend_data_list
         })
     except Exception as e:
-        print(f"Erreur dashboard (vue d'ensemble): {e}")
         return jsonify({"error": "Impossible de charger les données."}), 500
 
 @app.route('/api/qualitative-synthesis')
@@ -383,15 +324,15 @@ def qualitative_synthesis_data():
             "atmosphere": [{"value": v, "count": c} for v, c in get_category_data('atmosphere')]
         })
     except Exception as e:
-        print(f"Erreur synthèse qualitative: {e}")
         return jsonify({"error": "Impossible de charger les données."}), 500
-
+        
+# --- NOUVELLE ROUTE POUR LA SYNTHÈSE SIF ---
 @app.route('/api/sif-synthesis')
 @jwt_required()
 def sif_synthesis():
     period = request.args.get('period', 'all')
     try:
-        # NOTE: Cette section est une simulation. Une implémentation réelle nécessiterait une analyse NLP.
+        # NOTE: Cette section est une simulation.
         dummy_data = {
             "strengths": ["Service rapide et efficace", "Ambiance de brasserie parisienne authentique", "Qualité des viandes", "Desserts classiques très appréciés"],
             "weaknesses": ["Niveau sonore parfois élevé en soirée", "Attente pour une table sans réservation", "Peu d'options végétariennes"],
@@ -399,12 +340,11 @@ def sif_synthesis():
                 {"category": "Ambiance", "suggestion": "Installer des panneaux acoustiques discrets pour réduire le bruit ambiant."},
                 {"category": "Menu", "suggestion": "Ajouter un plat végétarien signature pour attirer une nouvelle clientèle."}
             ],
-            "sentiment_trend": [{"date": (datetime.utcnow() - timedelta(days=i)).isoformat(), "score": 80 - i*2 + (i%3)*4} for i in range(7)][::-1],
-            "categories": [{"name": "Service", "score": 92}, {"name": "Cuisine", "score": 88}, {"name": "Ambiance", "score": 85}, {"name": "Rapport Qualité/Prix", "score": 80}]
+            "sentiment_trend": [{"date": (datetime.utcnow() - timedelta(days=i)).isoformat(), "score": 80 - i*2 + (i%3)*4} for i in range(14)][::-1],
+            "categories": [{"name": "Service", "score": 92}, {"name": "Cuisine", "score": 88}, {"name": "Ambiance", "score": 85}, {"name": "Rapport Q/P", "score": 80}]
         }
         return jsonify(dummy_data)
     except Exception as e:
-        print(f"Erreur SIF: {e}")
         return jsonify({"error": "Impossible de générer la synthèse SIF."}), 500
 
 @app.route('/api/internal-feedback', methods=['GET'])
@@ -417,13 +357,9 @@ def get_internal_feedback():
         if status_filter != 'all': query = query.filter(InternalFeedback.status == status_filter)
         if search_term: query = query.filter(InternalFeedback.feedback_text.ilike(f'%{search_term}%'))
         results = query.order_by(desc(InternalFeedback.created_at)).all()
-        feedbacks = [{
-            "id": fb.id, "feedback_text": fb.feedback_text, "status": fb.status,
-            "created_at": fb.created_at.isoformat(), "server_name": s_name if s_name else "Non spécifié"
-        } for fb, s_name in results]
+        feedbacks = [{"id": fb.id, "feedback_text": fb.feedback_text, "status": fb.status, "created_at": fb.created_at.isoformat(), "server_name": s_name if s_name else "Non spécifié"} for fb, s_name in results]
         return jsonify(feedbacks)
     except Exception as e:
-        print(f"Erreur feedbacks: {e}")
         return jsonify({"error": "Impossible de charger les feedbacks."}), 500
 
 @app.route('/api/internal-feedback/<int:feedback_id>/status', methods=['PUT'])
@@ -447,16 +383,12 @@ def update_feedback_status(feedback_id):
 def menu_performance_data():
     period = request.args.get('period', 'all')
     try:
-        query = db.session.query(
-            MenuSelection.dish_name, MenuSelection.dish_category,
-            func.count(MenuSelection.id).label('selection_count')
-        )
+        query = db.session.query(MenuSelection.dish_name, MenuSelection.dish_category, func.count(MenuSelection.id).label('selection_count'))
         if period == '7days': query = query.filter(MenuSelection.selection_timestamp >= (datetime.utcnow() - timedelta(days=7)))
         elif period == '30days': query = query.filter(MenuSelection.selection_timestamp >= (datetime.utcnow() - timedelta(days=30)))
         results = query.group_by(MenuSelection.dish_name, MenuSelection.dish_category).order_by(desc('selection_count')).all()
         return jsonify([{"dish_name": n, "dish_category": c, "selection_count": s} for n, c, s in results])
     except Exception as e:
-        print(f"Erreur performance menu: {e}")
         return jsonify({"error": "Impossible de charger les données."}), 500
 
 @app.route('/api/reset-data', methods=['POST'])
