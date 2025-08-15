@@ -9,4 +9,3 @@ SQLAlchemy
 Flask-Limiter
 Flask-Talisman
 Flask-JWT-Extended
-google-search-results
