@@ -13,7 +13,7 @@ from werkzeug.security import check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
-from serpapi import GoogleSearch # Ajout de la librairie pour SerpApi
+from serpapi import GoogleSearch
 
 # --- CONFIGURATION INITIALE ---
 load_dotenv()
@@ -25,11 +25,13 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "une-super-cle-secret
 DASHBOARD_PASSWORD = "GallopinDashboard2025!"
 jwt = JWTManager(app)
 talisman = Talisman(app, content_security_policy=None)
+
+# Correction du Limiteur : suppression de la limite par défaut
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
+    # La limite par défaut a été retirée pour ne pas bloquer le dashboard
 )
 
 # --- CLIENTS API ---
@@ -43,63 +45,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # --- MODÈLES DE LA BASE DE DONNÉES ---
-class GeneratedReview(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    server_name = db.Column(db.String(80), nullable=False, index=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+class GeneratedReview(db.Model): id = db.Column(db.Integer, primary_key=True); server_name = db.Column(db.String(80), nullable=False, index=True); created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+class Server(db.Model): id = db.Column(db.Integer, primary_key=True); name = db.Column(db.String(80), unique=True, nullable=False)
+class FlavorOption(db.Model): id = db.Column(db.Integer, primary_key=True); text = db.Column(db.String(100), nullable=False); category = db.Column(db.String(50), nullable=False)
+class MenuSelection(db.Model): __tablename__ = 'menu_selections'; id = db.Column(db.Integer, primary_key=True); dish_name = db.Column(db.Text, nullable=False); dish_category = db.Column(db.Text, nullable=False); selection_timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
+class InternalFeedback(db.Model): __tablename__ = 'internal_feedback'; id = db.Column(db.Integer, primary_key=True); feedback_text = db.Column(db.Text, nullable=False); associated_server_id = db.Column(db.Integer, db.ForeignKey('server.id', ondelete='SET NULL'), nullable=True, index=True); status = db.Column(db.Text, nullable=False, default='new', index=True); created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True); server = db.relationship('Server')
+class QualitativeFeedback(db.Model): __tablename__ = 'qualitative_feedback'; id = db.Column(db.Integer, primary_key=True); category = db.Column(db.String(100), nullable=False, index=True); value = db.Column(db.String(100), nullable=False); created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-class Server(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-
-class FlavorOption(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=False)
-
-class MenuSelection(db.Model):
-    __tablename__ = 'menu_selections'
-    id = db.Column(db.Integer, primary_key=True)
-    dish_name = db.Column(db.Text, nullable=False)
-    dish_category = db.Column(db.Text, nullable=False)
-    selection_timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
-
-class InternalFeedback(db.Model):
-    __tablename__ = 'internal_feedback'
-    id = db.Column(db.Integer, primary_key=True)
-    feedback_text = db.Column(db.Text, nullable=False)
-    associated_server_id = db.Column(db.Integer, db.ForeignKey('server.id', ondelete='SET NULL'), nullable=True, index=True)
-    status = db.Column(db.Text, nullable=False, default='new', index=True)
-    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
-    server = db.relationship('Server')
-
-class QualitativeFeedback(db.Model):
-    __tablename__ = 'qualitative_feedback'
-    id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(100), nullable=False, index=True)
-    value = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-
-# --- INITIALISATION ET PEUPLEMENT DE LA BASE DE DONNÉES ---
-def seed_database():
-    if FlavorOption.query.first() is not None: return
-    menu_gallopin = {
-        "Entrées": ["Burrata aubergine / Burrata di Parme", "Œuf cassé aux girolles", "Petits violets à cru au parmesan", "Les six Gros escargots de Bourgogne", "Œufs bio mayo", "Moules gratinées", "Nems au poulet", "Carpaccio de Daurade", "Avocat thon épicé", "Calamars creamy spicy", "Cœur de Saumon blinis", "Pizza Truffes"],
-        "Plats": ["Risotto aux cêpes", "Paccheri aux morilles", "Gratin de ravioles", "Le foie de veau du GALLOPIN", "Cabillaud creamy spicy", "Saumon miso", "Daurade Royale au four", "La sole", "Agneau en petites côtelettes", "Tartare Brasserie", "Le Poivre dans le filet ou Béarnaise", "Coquelet Roti", "Classique escalope de veau"],
-        "Desserts": ["Saint Marcellin", "Pruneaux à l'Armagnac", "Omelette Norvégienne", "Tarte fine aux pommes", "Fraises & Framboises chantilly", "Pavlova aux fruits rouges", "L'énorme crème caramel", "Ile flottante", "Tartelette citron", "Mousse au chocolat", "La fameuse Brioche retrouvée", "Baba au Rhum", "Profiteroles", "Glaces et sorbets"]
-    }
-    for category, dishes in menu_gallopin.items():
-        for dish_name in dishes:
-            db.session.add(FlavorOption(text=dish_name.strip(), category=category))
-    db.session.commit()
-
+# --- INITIALISATION DE LA DB ---
 with app.app_context():
     db.create_all()
-    seed_database()
 
 # --- ROUTES API ---
 @app.route("/api/login", methods=["POST"])
-@limiter.limit("10 per minute")
+@limiter.limit("10 per minute") # Limite spécifique pour la connexion
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
@@ -109,6 +68,7 @@ def login():
 
 @app.route('/api/servers', methods=['GET', 'POST'])
 @jwt_required()
+@limiter.exempt
 def manage_servers():
     if request.method == 'POST':
         data = request.get_json()
@@ -122,6 +82,7 @@ def manage_servers():
 
 @app.route('/api/servers/<int:server_id>', methods=['PUT', 'DELETE'])
 @jwt_required()
+@limiter.exempt
 def handle_server(server_id):
     server = db.session.get(Server, server_id)
     if not server: return jsonify({"error": "Serveur non trouvé."}), 404
@@ -139,6 +100,7 @@ def handle_server(server_id):
 
 @app.route('/api/options/flavors', methods=['GET', 'POST'])
 @jwt_required()
+@limiter.exempt
 def manage_flavors():
     if request.method == 'POST':
         data = request.get_json()
@@ -152,6 +114,7 @@ def manage_flavors():
 
 @app.route('/api/options/flavors/<int:option_id>', methods=['PUT', 'DELETE'])
 @jwt_required()
+@limiter.exempt
 def handle_flavor(option_id):
     option = db.session.get(FlavorOption, option_id)
     if not option: return jsonify({"error": "Option non trouvée."}), 404
@@ -168,6 +131,7 @@ def handle_flavor(option_id):
         return jsonify({"success": True})
 
 @app.route('/api/public/data', methods=['GET'])
+@limiter.limit("60 per minute")
 def get_public_data():
     try:
         servers = Server.query.order_by(Server.name).all()
@@ -186,6 +150,7 @@ def get_public_data():
         return jsonify({"error": "Impossible de charger les données de configuration."}), 500
 
 @app.route('/generate-review', methods=['POST'])
+@limiter.limit("30 per hour") # Limite spécifique pour la génération d'avis
 def generate_review():
     data = request.get_json()
     if not data: return jsonify({"error": "Données invalides."}), 400
@@ -296,6 +261,7 @@ def analyze_reviews_with_ai(reviews):
 
 @app.route('/api/sif-synthesis')
 @jwt_required()
+@limiter.exempt
 def sif_synthesis():
     """Route principale pour la SIF."""
     try:
@@ -315,6 +281,7 @@ def sif_synthesis():
 # --- ROUTES DU DASHBOARD ---
 @app.route('/dashboard')
 @jwt_required()
+@limiter.exempt
 def dashboard_data():
     period = request.args.get('period', 'all')
     try:
@@ -343,6 +310,7 @@ def dashboard_data():
 
 @app.route('/api/server-stats')
 @jwt_required()
+@limiter.exempt
 def server_stats():
     period = request.args.get('period', 'all')
     query = db.session.query(GeneratedReview.server_name, func.count(GeneratedReview.id).label('review_count'))
@@ -353,6 +321,7 @@ def server_stats():
 
 @app.route('/api/menu-performance')
 @jwt_required()
+@limiter.exempt
 def menu_performance_data():
     period = request.args.get('period', 'all')
     query = db.session.query(MenuSelection.dish_name, MenuSelection.dish_category, func.count(MenuSelection.id).label('selection_count'))
@@ -363,6 +332,7 @@ def menu_performance_data():
 
 @app.route('/api/internal-feedback', methods=['GET'])
 @jwt_required()
+@limiter.exempt
 def get_internal_feedback():
     status_filter = request.args.get('status', 'all')
     query = db.session.query(InternalFeedback, Server.name).outerjoin(Server, InternalFeedback.associated_server_id == Server.id)
@@ -372,6 +342,7 @@ def get_internal_feedback():
 
 @app.route('/api/internal-feedback/<int:feedback_id>/status', methods=['PUT'])
 @jwt_required()
+@limiter.exempt
 def update_feedback_status(feedback_id):
     data = request.get_json()
     new_status = data.get('status')
@@ -384,6 +355,7 @@ def update_feedback_status(feedback_id):
 
 @app.route('/api/reset-data', methods=['POST'])
 @jwt_required()
+@limiter.exempt
 def reset_data():
     try:
         db.session.execute(text('TRUNCATE TABLE generated_review, menu_selections, internal_feedback, qualitative_feedback RESTART IDENTITY CASCADE;'))
