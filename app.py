@@ -9,6 +9,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text, desc
 from datetime import datetime, timedelta
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager
+from werkzeug.security import check_password_hash
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 from serpapi import GoogleSearch # Ajout de la librairie pour SerpApi
 
 # --- CONFIGURATION INITIALE ---
@@ -20,6 +24,13 @@ CORS(app, supports_credentials=True)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "une-super-cle-secrete-pour-le-developpement-gallopin")
 DASHBOARD_PASSWORD = "GallopinDashboard2025!"
 jwt = JWTManager(app)
+talisman = Talisman(app, content_security_policy=None)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 # --- CLIENTS API ---
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -32,19 +43,63 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # --- MODÈLES DE LA BASE DE DONNÉES ---
-class GeneratedReview(db.Model): id = db.Column(db.Integer, primary_key=True); server_name = db.Column(db.String(80), nullable=False, index=True); created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
-class Server(db.Model): id = db.Column(db.Integer, primary_key=True); name = db.Column(db.String(80), unique=True, nullable=False)
-class FlavorOption(db.Model): id = db.Column(db.Integer, primary_key=True); text = db.Column(db.String(100), nullable=False); category = db.Column(db.String(50), nullable=False)
-class MenuSelection(db.Model): __tablename__ = 'menu_selections'; id = db.Column(db.Integer, primary_key=True); dish_name = db.Column(db.Text, nullable=False); dish_category = db.Column(db.Text, nullable=False); selection_timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
-class InternalFeedback(db.Model): __tablename__ = 'internal_feedback'; id = db.Column(db.Integer, primary_key=True); feedback_text = db.Column(db.Text, nullable=False); associated_server_id = db.Column(db.Integer, db.ForeignKey('server.id', ondelete='SET NULL'), nullable=True, index=True); status = db.Column(db.Text, nullable=False, default='new', index=True); created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True); server = db.relationship('Server')
-class QualitativeFeedback(db.Model): __tablename__ = 'qualitative_feedback'; id = db.Column(db.Integer, primary_key=True); category = db.Column(db.String(100), nullable=False, index=True); value = db.Column(db.String(100), nullable=False); created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+class GeneratedReview(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    server_name = db.Column(db.String(80), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
 
-# --- INITIALISATION DE LA DB ---
+class Server(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+
+class FlavorOption(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+
+class MenuSelection(db.Model):
+    __tablename__ = 'menu_selections'
+    id = db.Column(db.Integer, primary_key=True)
+    dish_name = db.Column(db.Text, nullable=False)
+    dish_category = db.Column(db.Text, nullable=False)
+    selection_timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
+
+class InternalFeedback(db.Model):
+    __tablename__ = 'internal_feedback'
+    id = db.Column(db.Integer, primary_key=True)
+    feedback_text = db.Column(db.Text, nullable=False)
+    associated_server_id = db.Column(db.Integer, db.ForeignKey('server.id', ondelete='SET NULL'), nullable=True, index=True)
+    status = db.Column(db.Text, nullable=False, default='new', index=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), index=True)
+    server = db.relationship('Server')
+
+class QualitativeFeedback(db.Model):
+    __tablename__ = 'qualitative_feedback'
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(100), nullable=False, index=True)
+    value = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+# --- INITIALISATION ET PEUPLEMENT DE LA BASE DE DONNÉES ---
+def seed_database():
+    if FlavorOption.query.first() is not None: return
+    menu_gallopin = {
+        "Entrées": ["Burrata aubergine / Burrata di Parme", "Œuf cassé aux girolles", "Petits violets à cru au parmesan", "Les six Gros escargots de Bourgogne", "Œufs bio mayo", "Moules gratinées", "Nems au poulet", "Carpaccio de Daurade", "Avocat thon épicé", "Calamars creamy spicy", "Cœur de Saumon blinis", "Pizza Truffes"],
+        "Plats": ["Risotto aux cêpes", "Paccheri aux morilles", "Gratin de ravioles", "Le foie de veau du GALLOPIN", "Cabillaud creamy spicy", "Saumon miso", "Daurade Royale au four", "La sole", "Agneau en petites côtelettes", "Tartare Brasserie", "Le Poivre dans le filet ou Béarnaise", "Coquelet Roti", "Classique escalope de veau"],
+        "Desserts": ["Saint Marcellin", "Pruneaux à l'Armagnac", "Omelette Norvégienne", "Tarte fine aux pommes", "Fraises & Framboises chantilly", "Pavlova aux fruits rouges", "L'énorme crème caramel", "Ile flottante", "Tartelette citron", "Mousse au chocolat", "La fameuse Brioche retrouvée", "Baba au Rhum", "Profiteroles", "Glaces et sorbets"]
+    }
+    for category, dishes in menu_gallopin.items():
+        for dish_name in dishes:
+            db.session.add(FlavorOption(text=dish_name.strip(), category=category))
+    db.session.commit()
+
 with app.app_context():
     db.create_all()
+    seed_database()
 
 # --- ROUTES API ---
 @app.route("/api/login", methods=["POST"])
+@limiter.limit("10 per minute")
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
