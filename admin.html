@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Gallopin</title>
+    <link rel="icon" type="image/png" href="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://gallopin.com/&size=16">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* --- DESIGN SYSTEM & STYLES GLOBAUX POUR GALLOPIN --- */
@@ -12,10 +13,10 @@
         :root {
             --sidebar-width-expanded: 260px;
             --sidebar-width-collapsed: 88px;
-            /* Palette de couleurs adaptée à Gallopin */
-            --brand-color: #0A4F33; /* Vert foncé */
-            --brand-color-light: rgba(10, 79, 51, 0.1);
-            --brand-color-dark: #063823;
+            /* Palette de couleurs mise à jour avec le bleu */
+            --brand-color: #21304F; /* Bleu nuit */
+            --brand-color-light: rgba(33, 48, 79, 0.1);
+            --brand-color-dark: #152035;
             --background-color: #F8F9FA;
             --surface-color: #FFFFFF;
             --text-primary: #212529;
@@ -223,7 +224,6 @@
                                     <option value="Entrées">Entrées</option>
                                     <option value="Plats">Plats</option>
                                     <option value="Desserts">Desserts</option>
-                                    <!-- Ajoutez d'autres catégories si nécessaire -->
                                 </select>
                                 <button type="submit">Ajouter</button>
                             </form>
@@ -374,7 +374,7 @@
                 const ranking = await fetchWithAuth(`${API_BASE_URL}/api/server-stats?period=${period}`);
                 document.querySelector('#ranking-table tbody').innerHTML = ranking.map((item, index) => `<tr><td>${index + 1}</td><td>${item.server}</td><td>${item.count}</td></tr>`).join('');
                 if (charts.serverDistribution) charts.serverDistribution.destroy();
-                charts.serverDistribution = new Chart(document.getElementById('server-distribution-chart'), { type: 'doughnut', data: { labels: ranking.map(item => item.server), datasets: [{ data: ranking.map(item => item.count), backgroundColor: ['#0A4F33', '#5F8575', '#A9B9B3', '#D4AF37', '#E4C570'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+                charts.serverDistribution = new Chart(document.getElementById('server-distribution-chart'), { type: 'doughnut', data: { labels: ranking.map(item => item.server), datasets: [{ data: ranking.map(item => item.count), backgroundColor: ['#21304F', '#5C6B88', '#A9B3C5', '#D4AF37', '#E4C570'] }] }, options: { responsive: true, maintainAspectRatio: false } });
             } catch (error) { console.error("Erreur Stats Serveurs:", error); }
         }
 
@@ -387,7 +387,7 @@
                 document.getElementById('full-data-table-container').innerHTML = tableHTML + '</tbody></table>';
                 const categoryCounts = data.reduce((acc, item) => { acc[item.dish_category] = (acc[item.dish_category] || 0) + item.selection_count; return acc; }, {});
                 if (charts.categoryPie) charts.categoryPie.destroy();
-                charts.categoryPie = new Chart(document.getElementById('category-pie-chart'), { type: 'pie', data: { labels: Object.keys(categoryCounts), datasets: [{ data: Object.values(categoryCounts), backgroundColor: ['#0A4F33', '#5F8575', '#A9B9B3', '#D4AF37', '#E4C570'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+                charts.categoryPie = new Chart(document.getElementById('category-pie-chart'), { type: 'pie', data: { labels: Object.keys(categoryCounts), datasets: [{ data: Object.values(categoryCounts), backgroundColor: ['#21304F', '#5C6B88', '#A9B3C5', '#D4AF37', '#E4C570'] }] }, options: { responsive: true, maintainAspectRatio: false } });
             } catch (error) { console.error("Erreur Performance Menu:", error); }
         }
 

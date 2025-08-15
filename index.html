@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votre Avis sur Gallopin Paris</title>
+    <link rel="icon" type="image/png" href="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://gallopin.com/&size=16">
     <style>
         /* --- DESIGN SYSTEM POUR GALLOPIN --- */
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap');
         
         :root {
-            /* Palette de couleurs adaptée à Gallopin (Brasserie Parisienne) */
-            --brand-color: #0A4F33; /* Vert foncé, chic et traditionnel */
-            --brand-color-light: rgba(10, 79, 51, 0.1);
-            --brand-color-dark: #063823;
+            /* Palette de couleurs mise à jour avec le bleu */
+            --brand-color: #21304F; /* Bleu nuit */
+            --brand-color-light: rgba(33, 48, 79, 0.1);
+            --brand-color-dark: #152035;
             --accent-color: #D4AF37; /* Touche d'or pour le luxe */
             --background-color: #F8F9FA;
             --surface-color: #FFFFFF;
@@ -89,7 +90,7 @@
             background-color: var(--brand-color);
             color: #fff;
             border-color: var(--brand-color);
-            box-shadow: 0 4px 15px rgba(10, 79, 51, 0.25);
+            box-shadow: 0 4px 15px rgba(33, 48, 79, 0.25);
         }
 
         .tag-group input[type=checkbox]:disabled+label {
@@ -118,7 +119,7 @@
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230A4F33%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2321304F%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
             background-repeat: no-repeat;
             background-position: right 15px top 50%;
             background-size: .65em auto;
@@ -168,8 +169,8 @@
         .private-feedback-toggle input:checked+label { background: none; color: var(--text-primary); }
         
         .quick-review-prompt { margin-top: -15px; margin-bottom: 25px; }
-        .quick-review-prompt a { cursor: pointer; font-weight: 500; color: var(--text-primary); text-decoration: none; border-bottom: 2px solid transparent; box-shadow: inset 0 -8px 0 rgba(10, 79, 51, 0.2); transition: box-shadow 0.3s ease-in-out; }
-        .quick-review-prompt a:hover { box-shadow: inset 0 -1.2em 0 rgba(10, 79, 51, 0.3); }
+        .quick-review-prompt a { cursor: pointer; font-weight: 500; color: var(--text-primary); text-decoration: none; border-bottom: 2px solid transparent; box-shadow: inset 0 -8px 0 rgba(33, 48, 79, 0.2); transition: box-shadow 0.3s ease-in-out; }
+        .quick-review-prompt a:hover { box-shadow: inset 0 -1.2em 0 rgba(33, 48, 79, 0.3); }
         
         .social-icons { display: flex; justify-content: center; align-items: center; gap: 25px; margin-top: 20px; }
         .social-icons a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s; }
@@ -311,10 +312,10 @@
             <a href="https://search.google.com/local/writereview?placeid=ChIJyW6wknNv5kcRTdWzsViISUg" target="_blank" id="google-btn" class="button" data-translate-key="publish_button">Publier mon avis sur Google</a>
         </div>
         <footer>
-            &copy; <span id="copyright-year"></span> Gallopin. Site web par <a href="https://instagram.com/KwnLnrd" target="_blank" style="color: var(--text-secondary); text-decoration: underline;">KwnLnrd</a>.
+            &copy; <span id="copyright-year"></span> Gallopin. Powered by <a href="https://instagram.com/KwnLnrd" target="_blank" style="color: var(--text-secondary); text-decoration: underline;">KwnLnrd</a>.
             <div class="social-icons">
                 <a href="https://www.instagram.com/gallopin_paris/" target="_blank" title="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.149 0-3.505.012-4.73.068-2.793.127-4.057 1.383-4.184 4.184-.056 1.225-.067 1.575-.067 4.73s.011 3.505.067 4.73c.127 2.793 1.383 4.057 4.184 4.184 1.225.056 1.575.067 4.73.067s3.505-.011 4.73-.067c2.793-.127 4.057-1.383 4.184-4.184.056-1.225.067-1.575.067-4.73s-.011-3.505-.067-4.73c-.127-2.793-1.383-4.057-4.184-4.184-1.225-.056-1.575-.068-4.73-.068zm0 3.191c-2.496 0-4.502 2.006-4.502 4.502s2.006 4.502 4.502 4.502 4.502-2.006 4.502-4.502-2.006-4.502-4.502-4.502zm0 7.251c-1.516 0-2.75-1.234-2.75-2.75s1.234-2.75 2.75-2.75 2.75 1.234 2.75 2.75-1.234 2.75-2.75 2.75zm4.92-6.336c-.783 0-1.419.636-1.419 1.419s.636 1.419 1.419 1.419 1.419-.636 1.419-1.419-.636-1.419-1.419-1.419z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.149 0-3.505.012-4.73.068-2.793.127-4.057 1.383-4.184 4.184-.056 1.225-.067 1.575-.067 4.73s.011 3.505.067 4.73c.127 2.793 1.383 4.057 4.184 4.184 1.225.056 1.575.067 4.73.067s3.505-.011 4.73-.067c2.793-.127 4.057-1.383 4.184-4.184.056-1.225.067-1.575.067-4.73s-.011-3.505-.067-4.73c-.127-2.793-1.383-4.057-4.184-4.184-1.225-.056-1.575-.068-4.73-.068zm0 3.191c-2.496 0-4.502 2.006-4.502 4.502s2.006 4.502 4.502 4.502 4.502-2.006 4.502-4.502-2.006-4.502-4.502-4.502zm0 7.251c-1.516 0-2.75-1.234-2.75-2.75s1.234-2.75 2.75-2.75 2.75 1.234 2.75 2.75-1.234 2.75-2.75 2.75zm4.92-6.336c-.783 0-1.419.636-1.419 1.419s.636 1.419 1.419 1.419 1.419-.636 1.419-1.419-.636-1.419-1.419-1.419z"/></svg>
                 </a>
                 <a href="https://gallopin.com/" target="_blank" title="Site Web">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1h-2v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -498,11 +499,23 @@
                     const flavors = data.flavors || {};
                     const dishesContent = document.getElementById('dishes-content');
                     dishesContent.innerHTML = '';
-                    for (const category in flavors) {
-                        let subcategoryHTML = `<h4 class="dish-subcategory">${category}</h4><div class="tag-group">`;
-                        flavors[category].forEach(flavor => subcategoryHTML += `<input type="checkbox" id="dish_${flavor.id}" value="${flavor.text}"><label for="dish_${flavor.id}">${flavor.text}</label>`);
-                        dishesContent.innerHTML += subcategoryHTML + `</div>`;
+                    
+                    // Ordre d'affichage des catégories
+                    const categoryOrder = ['Entrées', 'Plats', 'Desserts'];
+                    const remainingCategories = Object.keys(flavors).filter(c => !categoryOrder.includes(c));
+                    const allCategories = [...categoryOrder, ...remainingCategories];
+
+                    for (const category of allCategories) {
+                        if (flavors[category]) {
+                            let subcategoryHTML = `<h4 class="dish-subcategory">${category}</h4><div class="tag-group">`;
+                            flavors[category].forEach(flavor => {
+                                subcategoryHTML += `<input type="checkbox" id="dish_${flavor.id}" value="${flavor.text}"><label for="dish_${flavor.id}">${flavor.text}</label>`;
+                            });
+                            subcategoryHTML += `</div>`;
+                            dishesContent.innerHTML += subcategoryHTML;
+                        }
                     }
+
                     initializeCheckboxGroup('dish');
                     translatePage();
                 } catch (error) {
