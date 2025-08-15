@@ -1,0 +1,8 @@
+# Fichier d'environnement contenant les secrets
+.env
+
+# Fichiers système de macOS
+.DS_Store
+
+# Dossiers de cache Python
+__pycache__/

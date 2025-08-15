@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gallopin Avis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-color: #0F2D25;
+            --background-color: #F5F0E8;
+            --text-color: #1a1a1a;
+            --accent-color: #B89D62;
+            --card-bg-color: #FFFFFF;
+            --font-primary: 'Playfair Display', serif;
+            --font-secondary: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-family: var(--font-primary);
+            color: var(--brand-color);
+            font-size: 2.2rem;
+        }
+
+        header img {
+            max-height: 50px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0d9cd;
+        }
+
+        .card-header {
+            font-family: var(--font-primary);
+            font-size: 1.5rem;
+            color: var(--brand-color);
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0d9cd;
+            padding-bottom: 10px;
+        }
+
+        /* Styles pour le formulaire de feedback */
+        .feedback-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #dcd5ca;
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .feedback-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .feedback-form input:focus,
+        .feedback-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(184, 157, 98, 0.2);
+        }
+
+        .submit-btn {
+            background-color: var(--brand-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #0a211b;
+        }
+        
+        #feedback-message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Styles pour les listes de données */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0ebe4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .flavor-name {
+            font-weight: bold;
+        }
+        .flavor-count {
+            background-color: var(--brand-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .feedback-item {
+            display: block;
+        }
+        .feedback-header {
+            font-weight: bold;
+            color: var(--brand-color);
+        }
+        .feedback-header span {
+            font-weight: normal;
+            color: #777;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        .feedback-text {
+            margin-top: 5px;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <header>
+            <h1>Tableau de Bord - Gallopin</h1>
+            <img src="https://gallopin.com/wp-content/uploads/2022/01/logo-gallopin.png" alt="Logo Gallopin" onerror="this.style.display='none'">
+        </header>
+
+        <div class="grid-container">
+            <div class="card">
+                <h2 class="card-header">Top 10 des Plats</h2>
+                <ul id="top-flavors-list">
+                    <!-- Données chargées ici -->
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2 class="card-header">Feedback Interne</h2>
+                <form id="feedback-form" class="feedback-form">
+                    <label for="server-name">Nom du Serveur</label>
+                    <input type="text" id="server-name" name="serverName" required>
+
+                    <label for="feedback-text">Feedback</label>
+                    <textarea id="feedback-text" name="feedbackText" required></textarea>
+
+                    <button type="submit" class="submit-btn">Envoyer</button>
+                    <p id="feedback-message"></p>
+                </form>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2 class="card-header">Feedbacks Récents</h2>
+                <ul id="recent-feedbacks-list">
+                    <!-- Données chargées ici -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // L'URL de base de votre API backend déployée sur Render.
+        // TODO: Remplacez cette URL par celle de votre propre déploiement Render.
+        const API_BASE_URL = "https://gallopin-avis-api.onrender.com";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const topFlavorsList = document.getElementById('top-flavors-list');
+            const recentFeedbacksList = document.getElementById('recent-feedbacks-list');
+            const feedbackForm = document.getElementById('feedback-form');
+            const feedbackMessage = document.getElementById('feedback-message');
+
+            async function loadDashboardData() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admin-data`);
+                    if (!response.ok) throw new Error('Failed to fetch admin data');
+                    const data = await response.json();
+
+                    // Afficher le top des plats
+                    topFlavorsList.innerHTML = '';
+                    if (data.top_flavors.length > 0) {
+                        data.top_flavors.forEach(item => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<span class="flavor-name">${item.flavor}</span><span class="flavor-count">${item.count}</span>`;
+                            topFlavorsList.appendChild(li);
+                        });
+                    } else {
+                        topFlavorsList.innerHTML = '<li>Aucune donnée disponible.</li>';
+                    }
+                    
+
+                    // Afficher les feedbacks récents
+                    recentFeedbacksList.innerHTML = '';
+                    if (data.recent_feedbacks.length > 0) {
+                        data.recent_feedbacks.forEach(fb => {
+                            const li = document.createElement('li');
+                            li.className = 'feedback-item';
+                            li.innerHTML = `
+                                <div class="feedback-header">${fb.server_name} <span>${fb.created_at}</span></div>
+                                <p class="feedback-text">${fb.feedback_text}</p>
+                            `;
+                            recentFeedbacksList.appendChild(li);
+                        });
+                    } else {
+                        recentFeedbacksList.innerHTML = '<li>Aucun feedback récent.</li>';
+                    }
+
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    topFlavorsList.innerHTML = '<li>Erreur de chargement.</li>';
+                    recentFeedbacksList.innerHTML = '<li>Erreur de chargement.</li>';
+                }
+            }
+
+            feedbackForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(feedbackForm);
+                const serverName = formData.get('serverName');
+                const feedbackText = formData.get('feedbackText');
+                
+                feedbackMessage.textContent = '';
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/submit-feedback`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ serverName, feedbackText })
+                    });
+                    
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        feedbackMessage.textContent = 'Feedback envoyé avec succès !';
+                        feedbackMessage.style.color = 'green';
+                        feedbackForm.reset();
+                        loadDashboardData(); // Recharger les données pour voir le nouveau feedback
+                    } else {
+                        throw new Error(result.error || 'Une erreur est survenue.');
+                    }
+                } catch (error) {
+                    feedbackMessage.textContent = `Erreur : ${error.message}`;
+                    feedbackMessage.style.color = 'red';
+                    console.error('Error submitting feedback:', error);
+                } finally {
+                    setTimeout(() => { feedbackMessage.textContent = ''; }, 4000);
+                }
+            });
+
+            // Chargement initial des données
+            loadDashboardData();
+        });
+    </script>
+
+</body>
+</html>
