@@ -3,501 +3,614 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre Avis - Gallopin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Polices originales de Siena pour conserver le design exact -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Votre Avis sur Gallopin Paris</title>
     <style>
+        /* --- DESIGN SYSTEM POUR GALLOPIN --- */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600&display=swap');
+        
         :root {
-            /* Palette de couleurs adaptée pour Gallopin */
-            --brand-color: #0F2D25; /* Vert foncé Gallopin */
-            --accent-color: #B89D62; /* Doré/Laiton Gallopin */
-            --background-color: #F5F0E8; /* Crème Gallopin */
-            --text-color: #1a1a1a;
-            --card-bg-color: #FFFFFF;
-            --font-primary: 'Cormorant Garamond', serif;
-            --font-secondary: 'Montserrat', sans-serif;
+            /* Palette de couleurs adaptée à Gallopin (Brasserie Parisienne) */
+            --brand-color: #0A4F33; /* Vert foncé, chic et traditionnel */
+            --brand-color-light: rgba(10, 79, 51, 0.1);
+            --brand-color-dark: #063823;
+            --accent-color: #D4AF37; /* Touche d'or pour le luxe */
+            --background-color: #F8F9FA;
+            --surface-color: #FFFFFF;
+            --text-primary: #212529;
+            --text-secondary: #6C757D;
+            --border-color: #DEE2E6;
+            --danger-color: #D32F2F;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* --- STYLES GLOBAUX --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        
         body {
-            font-family: var(--font-secondary);
+            font-family: var(--font-sans);
             background-color: var(--background-color);
-            color: var(--text-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
         }
 
         .review-container {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 28px 32px;
+            box-shadow: var(--shadow-md);
             width: 100%;
-            max-width: 600px;
-            background-color: var(--card-bg-color);
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
+            max-width: 520px;
             text-align: center;
-            padding: 30px 20px;
-            border-bottom: 1px solid #eee;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            animation: fadeIn .8s ease-out;
+            margin: 20px 0;
         }
 
-        .header img {
-            max-width: 180px;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 40px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .progress-bar::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 40px;
-            right: 40px;
-            height: 2px;
-            background-color: #e0e0e0;
-            transform: translateY(-50%);
-            z-index: 1;
-        }
-        .progress-bar .line {
-            position: absolute;
-            top: 50%;
-            left: 40px;
-            height: 2px;
-            background-color: var(--brand-color);
-            transform: translateY(-50%);
-            z-index: 2;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .step-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            z-index: 3;
-            transition: background-color 0.3s ease;
-        }
-        .step-indicator.active {
-            background-color: var(--brand-color);
-        }
-
-        .content {
-            padding: 30px 40px;
-        }
-
-        .step {
-            display: none;
-        }
-        .step.active {
-            display: block;
-        }
-
-        h2 {
-            font-family: var(--font-primary);
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--brand-color);
-        }
-
-        .rating-stars {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
-        }
-        .rating-stars .star {
-            font-size: 3rem;
-            color: #ccc;
+        .logo-container { margin-bottom: 10px; }
+        .logo-container img { width: 180px; height: auto; }
+        
+        h1 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 12px; margin-top: 10px; }
+        p { font-size: 1rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 32px; }
+        
+        /* --- SECTIONS & GROUPES DE TAGS --- */
+        .tag-section { margin-bottom: 28px; text-align: left; }
+        .tag-section h3 { font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 16px; color: var(--brand-color); }
+        
+        .tag-group { display: flex; flex-wrap: wrap; gap: 12px; }
+        .tag-group input[type=checkbox], .tag-group input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+        
+        .tag-group label {
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+            padding: 10px 18px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
+            font-size: .9rem;
+            font-weight: 500;
+            transition: all .3s ease;
+            border: 1px solid var(--border-color);
+            user-select: none;
         }
-        .rating-stars .star:hover {
-            transform: scale(1.15);
-        }
-        .rating-stars .star.selected,
-        .rating-stars .star.hovered {
-            color: var(--accent-color);
-        }
-
-        .options-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-        }
-        .category-group {
-            width: 100%;
-            margin-bottom: 15px;
-        }
-        .category-title {
-            font-family: var(--font-primary);
-            font-weight: 700;
-            color: var(--brand-color);
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .option-btn {
-            background-color: #f1f1f1;
-            color: #333;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            font-family: var(--font-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
-        .option-btn:hover {
-            background-color: #e7e7e7;
-            border-color: var(--accent-color);
-        }
-        .option-btn.selected {
+        
+        .tag-group input:checked+label {
             background-color: var(--brand-color);
-            color: white;
+            color: #fff;
             border-color: var(--brand-color);
+            box-shadow: 0 4px 15px rgba(10, 79, 51, 0.25);
         }
 
-        textarea {
+        .tag-group input[type=checkbox]:disabled+label {
+            cursor: not-allowed;
+            background-color: var(--background-color);
+            color: #BDBDBD;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        
+        /* --- FORMULAIRES --- */
+        select, textarea {
             width: 100%;
             padding: 12px;
             border-radius: 8px;
-            border: 1px solid #ccc;
-            font-family: var(--font-secondary);
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            font-family: var(--font-sans);
             font-size: 1rem;
-            margin-top: 10px;
-            resize: vertical;
-            min-height: 100px;
+            color: var(--text-primary);
+            box-sizing: border-box;
         }
 
-        .navigation-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-
-        .nav-btn {
-            background-color: var(--brand-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: 500;
+        select {
             cursor: pointer;
-            transition: background-color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230A4F33%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: .65em auto;
         }
-        .nav-btn:hover {
-            background-color: #0a211b;
-        }
-        .nav-btn.prev {
-            background-color: #ccc;
-        }
-        .nav-btn.prev:hover {
-            background-color: #bbb;
-        }
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        #result-card {
-            text-align: center;
-        }
-        #review-output {
-            white-space: pre-wrap;
-            background-color: #f9f9f9;
-            padding: 20px;
+
+        textarea { min-height: 140px; resize: vertical; margin-bottom: 16px; }
+
+        /* --- BOUTONS --- */
+        .button {
+            background-color: var(--brand-color);
+            color: #fff;
+            border: none;
+            padding: 16px;
             border-radius: 8px;
-            border: 1px solid #eee;
-            line-height: 1.7;
-            margin: 20px 0;
-            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color .3s ease;
+            display: block;
+            text-decoration: none;
+            box-sizing: border-box;
+            margin-top: 12px;
         }
-        .loader {
-            display: none;
-            padding: 20px;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
+
+        .button:hover { background-color: var(--brand-color-dark); }
+        .button.secondary { background: var(--surface-color); color: var(--brand-color); border: 1px solid var(--border-color); }
+        .button.secondary:hover { background-color: var(--background-color); border-color: var(--brand-color); }
+
+        /* --- AUTRES ÉLÉMENTS --- */
+        .hidden { display: none !important; }
+        .loader-container { display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 20px auto; }
+        .loader { width: 40px; height: 40px; border: 4px solid var(--border-color); border-left-color: var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: .8rem; color: var(--text-secondary); }
+        .dish-subcategory { font-weight: 600; font-size: .95rem; color: var(--text-secondary); margin-top: 20px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .dish-subcategory:first-child { margin-top: 0; }
+        
+        .language-switcher { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .lang-btn { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .lang-btn.active { background-color: var(--brand-color); color: white; border-color: var(--brand-color); }
+        
+        .private-feedback-toggle { display: flex; align-items: center; gap: 10px; text-align: left; margin-top: 20px; }
+        .private-feedback-toggle input[type="checkbox"] { position: static; opacity: 1; width: auto; height: auto; cursor: pointer; accent-color: var(--brand-color); }
+        .private-feedback-toggle label { background: none; color: var(--text-secondary); padding: 0; border: none; border-radius: 0; box-shadow: none; font-weight: 500; font-size: 0.95rem; transition: none; transform: none; }
+        .private-feedback-toggle input:checked+label { background: none; color: var(--text-primary); }
+        
+        .quick-review-prompt { margin-top: -15px; margin-bottom: 25px; }
+        .quick-review-prompt a { cursor: pointer; font-weight: 500; color: var(--text-primary); text-decoration: none; border-bottom: 2px solid transparent; box-shadow: inset 0 -8px 0 rgba(10, 79, 51, 0.2); transition: box-shadow 0.3s ease-in-out; }
+        .quick-review-prompt a:hover { box-shadow: inset 0 -1.2em 0 rgba(10, 79, 51, 0.3); }
+        
+        .social-icons { display: flex; justify-content: center; align-items: center; gap: 25px; margin-top: 20px; }
+        .social-icons a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s; }
+        .social-icons a:hover { color: var(--brand-color); }
+        .social-icons svg { width: 24px; height: 24px; }
+        
+        #thank-you-message { background-color: var(--brand-color-light); border-radius: 12px; padding: 18px; margin-bottom: 20px; text-align: left; border: 1px solid var(--brand-color); }
+        #thank-you-message h4 { margin: 0 0 10px 0; font-family: var(--font-serif); color: var(--brand-color); font-size: 1.3rem; }
+        #thank-you-message p { font-size: 0.95rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 0; }
+        
+        #notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #2C2C2C; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 2000; opacity: 0; animation: fadeIn 0.5s forwards; }
+        #notification.fade-out { animation: fadeOut 0.5s forwards; }
+        
+        .limit-notification { color: var(--brand-color); font-size: 0.9rem; margin-top: -10px; margin-bottom: 15px; text-align: left; font-weight: 500; transition: opacity 0.3s ease-in-out; }
+        .review-section-container { transition: opacity 0.4s ease-out, max-height 0.6s ease-in-out; overflow: hidden; max-height: 2000px; opacity: 1; }
+        .review-section-container.collapsed { max-height: 0; opacity: 0; }
+        
+        .dropdown-container { margin-top: 15px; max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.4s ease-out; }
+        .dropdown-container.visible { opacity: 1; }
+        #birthday_details_container.visible { max-height: 100px; }
+        #service-qualities-container.visible { max-height: 200px; }
+        .private-feedback-container.visible { max-height: 200px; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .review-container { padding: 20px 15px; margin: 10px 0; }
+            h1 { font-size: 1.9rem; }
+            .tag-group { gap: 10px; }
+            .tag-group label { padding: 8px 14px; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
-
     <div class="review-container">
-        <div class="header">
-            <img src="https://i.ibb.co/5k3Curw/logo-gallopin-white-bg.png" alt="Logo Gallopin">
-            <div class="progress-bar">
-                <div class="line"></div>
-                <div class="step-indicator active" data-step="1"></div>
-                <div class="step-indicator" data-step="2"></div>
-                <div class="step-indicator" data-step="3"></div>
-                <div class="step-indicator" data-step="4"></div>
-            </div>
+        <div class="language-switcher">
+            <button class="lang-btn active" data-lang="fr">🇫🇷 FR</button>
+            <button class="lang-btn" data-lang="en">🇬🇧 EN</button>
+            <button class="lang-btn" data-lang="es">🇪🇸 ES</button>
         </div>
+        <div class="logo-container">
+            <a href="https://gallopin.com/" target="_blank">
+                <img src="https://i.ibb.co/W4nVd6jD/Gallopin-logo.png" alt="Logo Gallopin Paris">
+            </a>
+        </div>
+        <h1 data-translate-key="main_title">Une expérience inoubliable ?</h1>
+        <p data-translate-key="subtitle">Partagez votre ressenti sur votre passage à la brasserie Gallopin. Votre avis est précieux.</p>
 
-        <div class="content">
-            <!-- Step 1: Rating -->
-            <div class="step active" id="step1">
-                <h2>Une expérience inoubliable ?</h2>
-                <div id="rating" class="rating-stars">
-                    <span class="star" data-value="1">★</span>
-                    <span class="star" data-value="2">★</span>
-                    <span class="star" data-value="3">★</span>
-                    <span class="star" data-value="4">★</span>
-                    <span class="star" data-value="5">★</span>
+        <p class="quick-review-prompt" id="quick-review-prompt-container">
+            <a id="quick-review-toggle" data-translate-key="quick_review_prompt">Pressé(e) ? Laissez un avis en 30 secondes</a>
+        </p>
+
+        <form id="review-form">
+            <div id="detailed-review-section" class="review-section-container">
+                <div class="tag-section">
+                    <h3 data-translate-key="occasion_title">Quelle était l'occasion ?</h3>
+                    <div class="tag-group" data-category="reason_for_visit">
+                        <input type="radio" id="event_birthday" name="event" value="un anniversaire"><label for="event_birthday" data-translate-key="occasion_birthday">Anniversaire</label>
+                        <input type="radio" id="event_romantic" name="event" value="un dîner romantique"><label for="event_romantic" data-translate-key="occasion_romantic">Dîner romantique</label>
+                        <input type="radio" id="event_friends" name="event" value="un dîner entre amis"><label for="event_friends" data-translate-key="occasion_friends">Dîner entre amis</label>
+                        <input type="radio" id="event_visit" name="event" value="une simple visite" checked><label for="event_visit" data-translate-key="occasion_visit">Simple visite</label>
+                    </div>
                 </div>
-                <div class="navigation-buttons">
-                    <span></span> <!-- Placeholder for alignment -->
-                    <button class="nav-btn next" onclick="nextStep()">Suivant</button>
+                <div class="tag-section">
+                    <h3 data-translate-key="server_title">Un service à souligner ?</h3>
+                    <select id="server-select" data-category="server_name">
+                        <option value="" data-translate-key="server_choose">-- Choisissez un prénom --</option>
+                    </select>
+                    <div id="service-qualities-container" class="dropdown-container">
+                        <p style="font-size: 0.9rem; margin-top: 20px; margin-bottom: 10px;" data-translate-key="service_subtitle">Qu'avez-vous particulièrement apprécié ? (3 choix max)</p>
+                        <p class="limit-notification hidden"></p>
+                        <div class="tag-group" data-category="service_qualities">
+                            <input type="checkbox" id="tag_service_1" value="attentionné"><label for="tag_service_1" data-translate-key="service_q1">Attentionné</label>
+                            <input type="checkbox" id="tag_service_2" value="souriant et chaleureux"><label for="tag_service_2" data-translate-key="service_q2">Souriant</label>
+                            <input type="checkbox" id="tag_service_3" value="professionnel"><label for="tag_service_3" data-translate-key="service_q3">Professionnel</label>
+                            <input type="checkbox" id="tag_service_4" value="efficace et rapide"><label for="tag_service_4" data-translate-key="service_q4">Efficace</label>
+                            <input type="checkbox" id="tag_service_5" value="de très bon conseil"><label for="tag_service_5" data-translate-key="service_q5">De bon conseil</label>
+                            <input type="checkbox" id="tag_service_6" value="discret"><label for="tag_service_6" data-translate-key="service_q6">Discret</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="tag-section" id="dishes-section-limiter">
+                    <h3 data-translate-key="flavors_title">Les plats qui vous ont marqué</h3>
+                    <p style="font-size: 0.9rem; margin-top: -10px; margin-bottom: 20px;" data-translate-key="flavors_subtitle">Choisissez jusqu'à 6 de vos coups de cœur.</p>
+                    <p class="limit-notification hidden"></p>
+                    <div id="dishes-content" data-category="dish">
+                        <p data-translate-key="loading_options">Chargement du menu...</p>
+                    </div>
+                </div>
+                <div class="tag-section">
+                    <h3 data-translate-key="atmosphere_title">L'atmosphère du lieu</h3>
+                    <p style="font-size: 0.9rem; margin-top: -10px; margin-bottom: 20px;" data-translate-key="atmosphere_subtitle">Sélectionnez jusqu'à 3 options.</p>
+                    <p class="limit-notification hidden"></p>
+                    <div class="tag-group" data-category="atmosphere" id="atmospheres-content"></div>
                 </div>
             </div>
 
-            <!-- Step 2: Dishes -->
-            <div class="step" id="step2">
-                <h2>Qu'avez-vous dégusté ?</h2>
-                <div id="dishes-content" class="options-grid">
-                    <p>Chargement du menu...</p>
+            <div id="quick-review-section" class="review-section-container collapsed">
+                 <div class="tag-section">
+                    <h3 data-translate-key="server_title">Un service à souligner ?</h3>
+                    <select id="server-select-express" data-category="server_name">
+                        <option value="" data-translate-key="server_choose">-- Choisissez un prénom --</option>
+                    </select>
                 </div>
-                <div class="navigation-buttons">
-                    <button class="nav-btn prev" onclick="prevStep()">Précédent</button>
-                    <button class="nav-btn next" onclick="nextStep()">Suivant</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Atmosphere -->
-            <div class="step" id="step3">
-                <h2>Comment décririez-vous l'atmosphère ?</h2>
-                <div id="tags-content" class="options-grid">
-                    <button class="option-btn">Ambiance historique</button>
-                    <button class="option-btn">Décor Belle Époque</button>
-                    <button class="option-btn">Service traditionnel</button>
-                    <button class="option-btn">Cuisine raffinée</button>
-                    <button class="option-btn">Cadre élégant</button>
-                    <button class="option-btn">Institution parisienne</button>
-                    <button class="option-btn">Terrasse agréable</button>
-                    <button class="option-btn">Moment d'exception</button>
-                </div>
-                 <div class="navigation-buttons">
-                    <button class="nav-btn prev" onclick="prevStep()">Précédent</button>
-                    <button class="nav-btn next" id="generate-btn">Générer mon avis</button>
-                </div>
-            </div>
-
-            <!-- Step 4: Result -->
-            <div class="step" id="step4">
-                <div id="result-card">
-                    <h2>Votre Avis Personnalisé</h2>
-                    <div id="loader" class="loader"><p>Rédaction en cours...</p></div>
-                    <div id="review-output"></div>
-                    <div class="action-buttons">
-                        <button id="copy-btn" class="nav-btn prev">Copier</button>
-                        <a href="https://www.google.com/search?q=gallopin+paris+avis" target="_blank" class="nav-btn">Publier sur Google</a>
+                <div class="tag-section">
+                    <h3 data-translate-key="quick_review_highlight_title">Le point fort de votre visite</h3>
+                    <p class="limit-notification hidden"></p>
+                     <div class="tag-group" data-category="quick_highlight">
+                        <input type="checkbox" id="highlight_1" value="Service impeccable"><label for="highlight_1" data-translate-key="highlight_service">Service impeccable</label>
+                        <input type="checkbox" id="highlight_2" value="Ambiance parisienne authentique"><label for="highlight_2" data-translate-key="highlight_atmosphere">Ambiance parisienne</label>
+                        <input type="checkbox" id="highlight_3" value="Cuisine traditionnelle de qualité"><label for="highlight_3" data-translate-key="highlight_cuisine">Cuisine de qualité</label>
+                        <input type="checkbox" id="highlight_4" value="Cadre historique"><label for="highlight_4" data-translate-key="highlight_decor">Cadre historique</label>
+                        <input type="checkbox" id="highlight_5" value="Excellents produits"><label for="highlight_5" data-translate-key="highlight_products">Excellents produits</label>
+                        <input type="checkbox" id="highlight_6" value="Superbe soirée"><label for="highlight_6" data-translate-key="highlight_evening">Superbe soirée</label>
                     </div>
                 </div>
             </div>
+
+            <div id="common-form-elements">
+                 <div class="tag-section">
+                    <div class="private-feedback-toggle">
+                        <input type="checkbox" id="toggle-private-feedback">
+                        <label for="toggle-private-feedback" data-translate-key="private_feedback_label">J'ai une suggestion privée pour l'équipe</label>
+                    </div>
+                    <div id="private-feedback-container" class="private-feedback-container dropdown-container">
+                        <textarea id="private-feedback-text" data-translate-key="private_feedback_placeholder" placeholder="Votre suggestion nous aidera à nous améliorer..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="button" id="generate-btn" data-translate-key="generate_button">Créer mon message</button>
+            </div>
+        </form>
+
+        <div id="loader" class="loader-container hidden">
+            <div class="loader"></div>
+            <span id="loader-text"></span>
         </div>
+        <div id="result-area" class="hidden">
+            <div id="thank-you-message" class="hidden"></div>
+            <textarea id="review-text" readonly></textarea>
+            <a href="https://search.google.com/local/writereview?placeid=ChIJyW6wknNv5kcRTdWzsViISUg" target="_blank" id="google-btn" class="button" data-translate-key="publish_button">Publier mon avis sur Google</a>
+        </div>
+        <footer>
+            &copy; <span id="copyright-year"></span> Gallopin. Site web par <a href="https://instagram.com/KwnLnrd" target="_blank" style="color: var(--text-secondary); text-decoration: underline;">KwnLnrd</a>.
+            <div class="social-icons">
+                <a href="https://www.instagram.com/gallopin_paris/" target="_blank" title="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.149 0-3.505.012-4.73.068-2.793.127-4.057 1.383-4.184 4.184-.056 1.225-.067 1.575-.067 4.73s.011 3.505.067 4.73c.127 2.793 1.383 4.057 4.184 4.184 1.225.056 1.575.067 4.73.067s3.505-.011 4.73-.067c2.793-.127 4.057-1.383 4.184-4.184.056-1.225.067-1.575.067-4.73s-.011-3.505-.067-4.73c-.127-2.793-1.383-4.057-4.184-4.184-1.225-.056-1.575-.068-4.73-.068zm0 3.191c-2.496 0-4.502 2.006-4.502 4.502s2.006 4.502 4.502 4.502 4.502-2.006 4.502-4.502-2.006-4.502-4.502-4.502zm0 7.251c-1.516 0-2.75-1.234-2.75-2.75s1.234-2.75 2.75-2.75 2.75 1.234 2.75 2.75-1.234 2.75-2.75 2.75zm4.92-6.336c-.783 0-1.419.636-1.419 1.419s.636 1.419 1.419 1.419 1.419-.636 1.419-1.419-.636-1.419-1.419-1.419z"/></svg>
+                </a>
+                <a href="https://gallopin.com/" target="_blank" title="Site Web">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1h-2v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </a>
+            </div>
+        </footer>
     </div>
-
+    <div id="notification" class="hidden"></div>
     <script>
-        // L'URL de base de votre API backend déployée sur Render.
-        // TODO: Remplacez cette URL par celle de votre propre déploiement Render.
-        const API_BASE_URL = "https://gallopin-avis-api.onrender.com";
-        
-        let currentStep = 1;
-        const totalSteps = 4;
-        let selectedRating = 0;
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            const API_BASE_URL = 'https://gallopin.onrender.com';
 
-        const stars = document.querySelectorAll('.star');
-        const dishesContainer = document.getElementById('dishes-content');
-        const tagsContainer = document.getElementById('tags-content');
-        const generateBtn = document.getElementById('generate-btn');
-        const copyBtn = document.getElementById('copy-btn');
-        const reviewOutput = document.getElementById('review-output');
-        const loader = document.getElementById('loader');
+            const translations = {
+                fr: {
+                    main_title: "Une expérience inoubliable ?", subtitle: "Partagez votre ressenti sur votre passage à la brasserie Gallopin. Votre avis est précieux.",
+                    quick_review_prompt: "Pressé(e) ? Laissez un avis en 30 secondes",
+                    quick_review_prompt_detailed: "Afficher plus d'options pour un avis détaillé",
+                    quick_review_highlight_title: "Le point fort de votre visite",
+                    highlight_service: "Service impeccable", highlight_atmosphere: "Ambiance parisienne", highlight_cuisine: "Cuisine de qualité", highlight_decor: "Cadre historique", highlight_products: "Excellents produits", highlight_evening: "Superbe soirée",
+                    occasion_title: "Quelle était l'occasion ?", occasion_birthday: "Anniversaire", occasion_romantic: "Dîner romantique", occasion_friends: "Dîner entre amis", occasion_visit: "Simple visite",
+                    server_title: "Un service à souligner ?", server_choose: "-- Choisissez un prénom --", service_subtitle: "Qu'avez-vous particulièrement apprécié ? (3 choix max)", service_q1: "Attentionné", service_q2: "Souriant", service_q3: "Professionnel", service_q4: "Efficace", service_q5: "De bon conseil", service_q6: "Discret",
+                    flavors_title: "Les plats qui vous ont marqué", flavors_subtitle: "Choisissez jusqu'à 6 de vos coups de cœur.",
+                    atmosphere_title: "L'atmosphère du lieu", atmosphere_subtitle: "Sélectionnez jusqu'à 3 options.",
+                    atmosphere_authentic: "Authentique", atmosphere_lively: "Animée", atmosphere_historic: "Historique", atmosphere_chic: "Chic", atmosphere_cosy: "Cosy", atmosphere_parisian: "Typiquement Parisienne",
+                    private_feedback_label: "J'ai une suggestion privée pour l'équipe", private_feedback_placeholder: "Votre suggestion nous aidera à nous améliorer...",
+                    generate_button: "Créer mon message", publish_button: "Publier mon avis sur Google",
+                    loading_messages: ["Notre maître d'hôtel numérique prend note...", "Le chef prépare votre avis...", "Finalisation dans notre office..."],
+                    alert_no_option: "Veuillez sélectionner au moins une option ou laisser un feedback privé.",
+                    limit_reached: (limit) => `Vous avez atteint la limite de ${limit} options.`,
+                    thank_you_title: "Merci pour votre contribution !", thank_you_instructions: "<strong>Suivez ces 2 étapes :</strong><br>1. Le texte a été copié.<br>2. Cliquez sur 'Publier sur Google' et collez votre avis.",
+                    loading_options: "Chargement du menu...", loading_error: "Erreur de chargement du menu."
+                },
+                en: {
+                    main_title: "An unforgettable experience?", subtitle: "Share your feelings about your visit to Gallopin brasserie. Your opinion is valuable.",
+                    quick_review_prompt: "In a hurry? Leave a review in 30 seconds",
+                    quick_review_prompt_detailed: "Show more options for a detailed review",
+                    quick_review_highlight_title: "The highlight of your visit",
+                    highlight_service: "Impeccable service", highlight_atmosphere: "Parisian atmosphere", highlight_cuisine: "Quality cuisine", highlight_decor: "Historic setting", highlight_products: "Excellent products", highlight_evening: "Superb evening",
+                    occasion_title: "What was the occasion?", occasion_birthday: "Birthday", occasion_romantic: "Romantic dinner", occasion_friends: "Dinner with friends", occasion_visit: "Just visiting",
+                    server_title: "A service to highlight?", server_choose: "-- Choose a name --", service_subtitle: "What did you particularly appreciate? (3 choices max)", service_q1: "Attentive", service_q2: "Smiling", service_q3: "Professional", service_q4: "Efficient", service_q5: "Good advice", service_q6: "Discreet",
+                    flavors_title: "The dishes that impressed you", flavors_subtitle: "Choose up to 6 of your favorites.",
+                    atmosphere_title: "The atmosphere", atmosphere_subtitle: "Select up to 3 options.",
+                    atmosphere_authentic: "Authentic", atmosphere_lively: "Lively", atmosphere_historic: "Historic", atmosphere_chic: "Chic", atmosphere_cosy: "Cosy", atmosphere_parisian: "Typically Parisian",
+                    private_feedback_label: "I have a private suggestion for the team", private_feedback_placeholder: "Your suggestion will help us improve...",
+                    generate_button: "Create my message", publish_button: "Publish review on Google",
+                    loading_messages: ["Our digital maître d' is taking notes...", "The chef is preparing your review...", "Finalizing in our office..."],
+                    alert_no_option: "Please select at least one option or leave private feedback.",
+                    limit_reached: (limit) => `You have reached the limit of ${limit} options.`,
+                    thank_you_title: "Thank you for your contribution!", thank_you_instructions: "<strong>Follow these 2 steps:</strong><br>1. The text has been copied.<br>2. Click 'Publish on Google' and paste your review.",
+                    loading_options: "Loading menu...", loading_error: "Error loading menu."
+                },
+                es: {
+                    main_title: "¿Una experiencia inolvidable?", subtitle: "Comparta sus impresiones sobre su visita a la brasserie Gallopin. Su opinión es muy valiosa.",
+                    quick_review_prompt: "¿Tiene prisa? Deje una reseña en 30 segundos",
+                    quick_review_prompt_detailed: "Mostrar más opciones para una reseña detallada",
+                    quick_review_highlight_title: "Lo más destacado de su visita",
+                    highlight_service: "Servicio impecable", highlight_atmosphere: "Ambiente parisino", highlight_cuisine: "Cocina de calidad", highlight_decor: "Marco histórico", highlight_products: "Excelentes productos", highlight_evening: "Noche magnífica",
+                    occasion_title: "¿Cuál fue la ocasión?", occasion_birthday: "Cumpleaños", occasion_romantic: "Cena romántica", occasion_friends: "Cena con amigos", occasion_visit: "Simple visita",
+                    server_title: "¿Un servicio a destacar?", server_choose: "-- Elija un nombre --", service_subtitle: "¿Qué apreció especialmente? (máx. 3 opciones)", service_q1: "Atento", service_q2: "Sonriente", service_q3: "Profesional", service_q4: "Eficiente", service_q5: "Buen consejo", service_q6: "Discreto",
+                    flavors_title: "Los platos que le marcaron", flavors_subtitle: "Elija hasta 6 de sus favoritos.",
+                    atmosphere_title: "El ambiente del lugar", atmosphere_subtitle: "Seleccione hasta 3 opciones.",
+                    atmosphere_authentic: "Auténtico", atmosphere_lively: "Animado", atmosphere_historic: "Histórico", atmosphere_chic: "Chic", atmosphere_cosy: "Acogedor", atmosphere_parisian: "Típicamente Parisino",
+                    private_feedback_label: "Tengo una sugerencia privada para el equipo", private_feedback_placeholder: "Su sugerencia nos ayudará a mejorar...",
+                    generate_button: "Crear mi mensaje", publish_button: "Publicar reseña en Google",
+                    loading_messages: ["Nuestro maître digital está tomando nota...", "El chef está preparando su reseña...", "Finalizando en nuestra oficina..."],
+                    alert_no_option: "Por favor, seleccione al menos una opción o deje un comentario privado.",
+                    limit_reached: (limit) => `Ha alcanzado el límite de ${limit} opciones.`,
+                    thank_you_title: "¡Gracias por su contribución!", thank_you_instructions: "<strong>Siga estos 2 pasos:</strong><br>1. El texto ha sido copiado.<br>2. Haga clic en 'Publicar en Google' y pegue su reseña.",
+                    loading_options: "Cargando el menú...", loading_error: "Error al cargar el menú."
+                }
+            };
+            
+            let currentLang = 'fr';
+            const form = document.getElementById('review-form');
+            const serverSelect = document.getElementById('server-select');
+            const serverSelectExpress = document.getElementById('server-select-express');
+            const serviceQualitiesContainer = document.getElementById('service-qualities-container');
+            const googleBtn = document.getElementById('google-btn');
+            const reviewText = document.getElementById('review-text');
+            const generateBtn = document.getElementById('generate-btn');
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
+            const resultArea = document.getElementById('result-area');
+            const thankYouMessage = document.getElementById('thank-you-message');
+            const notification = document.getElementById('notification');
+            const quickReviewToggle = document.getElementById('quick-review-toggle');
+            const detailedReviewSection = document.getElementById('detailed-review-section');
+            const quickReviewSection = document.getElementById('quick-review-section');
+            const privateFeedbackToggle = document.getElementById('toggle-private-feedback');
+            const privateFeedbackContainer = document.getElementById('private-feedback-container');
+            const privateFeedbackText = document.getElementById('private-feedback-text');
+            let isQuickReviewMode = false;
+            let loadingInterval;
 
-        // --- Gestion des étapes ---
-        function updateStepIndicators() {
-            const indicators = document.querySelectorAll('.step-indicator');
-            const line = document.querySelector('.progress-bar .line');
-            indicators.forEach(indicator => {
-                indicator.classList.toggle('active', indicator.dataset.step <= currentStep);
+            const getTranslation = (key, ...args) => {
+                const value = translations[currentLang]?.[key] || translations['fr'][key];
+                return typeof value === 'function' ? value(...args) : value;
+            };
+
+            const showNotification = (message) => {
+                notification.textContent = message;
+                notification.classList.remove('hidden', 'fade-out');
+                setTimeout(() => {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => notification.classList.add('hidden'), 500);
+                }, 3000);
+            };
+
+            const translatePage = () => {
+                document.querySelectorAll('[data-translate-key]').forEach(el => {
+                    const key = el.dataset.translateKey;
+                    if (el.tagName === 'TEXTAREA' && el.placeholder) {
+                        el.placeholder = getTranslation(key);
+                    } else {
+                        el.textContent = getTranslation(key);
+                    }
+                });
+            };
+
+            const switchLanguage = (lang) => {
+                if (translations[lang]) {
+                    currentLang = lang;
+                    document.documentElement.lang = lang;
+                    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+                    translatePage();
+                }
+            };
+            
+            const getLimitForCategory = (category) => ({'service_qualities': 3, 'dish': 6, 'atmosphere': 3, 'quick_highlight': 3}[category]);
+
+            const initializeCheckboxGroup = (category) => {
+                const limit = getLimitForCategory(category);
+                if (!limit) return;
+                const container = document.querySelector(`[data-category="${category}"]`);
+                if (!container) return;
+                const section = container.closest('.tag-section');
+                const notificationEl = section?.querySelector('.limit-notification');
+                
+                const updateLimitState = () => {
+                    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                    const checkedCount = container.querySelectorAll('input[type="checkbox"]:checked').length;
+                    const limitReached = checkedCount >= limit;
+                    checkboxes.forEach(cb => { if (!cb.checked) cb.disabled = limitReached; });
+                    if (notificationEl) {
+                        notificationEl.classList.toggle('hidden', !limitReached);
+                        if (limitReached) notificationEl.textContent = getTranslation('limit_reached', limit);
+                    }
+                };
+                container.addEventListener('change', (e) => { if (e.target.type === 'checkbox') updateLimitState(); });
+                updateLimitState();
+            };
+
+            const populateAtmospheres = () => {
+                const atmosphereOptions = [
+                    { key: 'atmosphere_authentic', value: 'Authentique' }, { key: 'atmosphere_lively', value: 'Animée' },
+                    { key: 'atmosphere_historic', value: 'Historique' }, { key: 'atmosphere_chic', value: 'Chic' },
+                    { key: 'atmosphere_cosy', value: 'Cosy' }, { key: 'atmosphere_parisian', value: 'Typiquement Parisienne' }
+                ];
+                const container = document.getElementById('atmospheres-content');
+                if (!container) return;
+                container.innerHTML = atmosphereOptions.map(opt => `
+                    <input type="checkbox" id="${opt.key}" value="${opt.value}">
+                    <label for="${opt.key}" data-translate-key="${opt.key}"></label>
+                `).join('');
+                initializeCheckboxGroup('atmosphere');
+            };
+
+            async function fetchPublicData() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/public/data`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+
+                    const servers = data.servers || [];
+                    [serverSelect, serverSelectExpress].forEach(select => {
+                        select.innerHTML = `<option value="" data-translate-key="server_choose"></option>`;
+                        servers.forEach(server => select.innerHTML += `<option value="${server.name}">${server.name}</option>`);
+                    });
+
+                    const flavors = data.flavors || {};
+                    const dishesContent = document.getElementById('dishes-content');
+                    dishesContent.innerHTML = '';
+                    for (const category in flavors) {
+                        let subcategoryHTML = `<h4 class="dish-subcategory">${category}</h4><div class="tag-group">`;
+                        flavors[category].forEach(flavor => subcategoryHTML += `<input type="checkbox" id="dish_${flavor.id}" value="${flavor.text}"><label for="dish_${flavor.id}">${flavor.text}</label>`);
+                        dishesContent.innerHTML += subcategoryHTML + `</div>`;
+                    }
+                    initializeCheckboxGroup('dish');
+                    translatePage();
+                } catch (error) {
+                    console.error('Failed to fetch public data:', error);
+                    document.getElementById('dishes-content').innerHTML = `<p data-translate-key="loading_error"></p>`;
+                    translatePage();
+                }
+            }
+            
+            document.querySelectorAll('.lang-btn').forEach(button => button.addEventListener('click', () => switchLanguage(button.dataset.lang)));
+            serverSelect.addEventListener('change', () => serviceQualitiesContainer.classList.toggle('visible', !!serverSelect.value));
+            quickReviewToggle.addEventListener('click', () => {
+                isQuickReviewMode = !isQuickReviewMode;
+                detailedReviewSection.classList.toggle('collapsed', isQuickReviewMode);
+                quickReviewSection.classList.toggle('collapsed', !isQuickReviewMode);
+                quickReviewToggle.dataset.translateKey = isQuickReviewMode ? 'quick_review_prompt_detailed' : 'quick_review_prompt';
+                translatePage();
             });
-            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
-            line.style.width = `${progress}%`;
-        }
+            privateFeedbackToggle.addEventListener('change', () => privateFeedbackContainer.classList.toggle('visible', privateFeedbackToggle.checked));
 
-        function showStep(stepNumber) {
-            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-            document.getElementById(`step${stepNumber}`).classList.add('active');
-            updateStepIndicators();
-        }
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const tags = [];
+                const selectedCheckboxes = document.querySelectorAll(`#${isQuickReviewMode ? 'quick-review-section' : 'detailed-review-section'} input:checked`);
+                const privateFeedback = privateFeedbackText.value.trim();
 
-        window.nextStep = function() {
-            if (currentStep < totalSteps) {
-                // Validation
-                if (currentStep === 1 && selectedRating === 0) {
-                    alert("Veuillez sélectionner une note.");
+                if (selectedCheckboxes.length === 0 && !privateFeedback) {
+                    showNotification(getTranslation('alert_no_option'));
                     return;
                 }
-                if (currentStep === 2) {
-                    const selectedFlavors = Array.from(dishesContainer.querySelectorAll('.option-btn.selected'));
-                    if (selectedFlavors.length === 0) {
-                        alert("Veuillez sélectionner au moins un plat.");
+
+                document.querySelectorAll('input:checked, select').forEach(el => {
+                    const container = el.closest('[data-category]');
+                    if (container && el.value) {
+                        const category = container.dataset.category;
+                        if ((isQuickReviewMode && category === 'quick_highlight') || (!isQuickReviewMode && category !== 'quick_highlight')) {
+                            tags.push({ category, value: el.value });
+                        }
+                    }
+                });
+                
+                const serverName = isQuickReviewMode ? serverSelectExpress.value : serverSelect.value;
+                if(serverName) tags.push({ category: 'server_name', value: serverName });
+
+                form.classList.add('hidden');
+                loader.classList.remove('hidden');
+                let msgIndex = 0;
+                loaderText.textContent = getTranslation('loading_messages')[msgIndex];
+                loadingInterval = setInterval(() => {
+                    msgIndex = (msgIndex + 1) % getTranslation('loading_messages').length;
+                    loaderText.textContent = getTranslation('loading_messages')[msgIndex];
+                }, 2000);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/generate-review`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ lang: currentLang, tags, private_feedback: privateFeedback })
+                    });
+                    const result = await response.json();
+                    
+                    clearInterval(loadingInterval);
+                    loader.classList.add('hidden');
+
+                    if (result.error) {
+                        showNotification(result.error);
+                        form.classList.remove('hidden');
                         return;
                     }
-                }
-                currentStep++;
-                showStep(currentStep);
-            }
-        }
 
-        window.prevStep = function() {
-            if (currentStep > 1) {
-                currentStep--;
-                showStep(currentStep);
-            }
-        }
-
-        // --- Gestion des étoiles ---
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                selectedRating = star.dataset.value;
-                updateStars(selectedRating);
-            });
-            star.addEventListener('mouseover', () => updateStars(star.dataset.value, true));
-            star.addEventListener('mouseout', () => updateStars(selectedRating));
-        });
-
-        function updateStars(rating, isHover = false) {
-            stars.forEach(star => {
-                star.classList.remove('selected', 'hovered');
-                if (star.dataset.value <= rating) {
-                    star.classList.add(isHover ? 'hovered' : 'selected');
+                    resultArea.classList.remove('hidden');
+                    if (result.review) {
+                        reviewText.value = result.review;
+                        reviewText.style.height = 'auto';
+                        reviewText.style.height = (reviewText.scrollHeight) + 'px';
+                        thankYouMessage.innerHTML = `<h4>${getTranslation('thank_you_title')}</h4><p>${getTranslation('thank_you_instructions')}</p>`;
+                        thankYouMessage.classList.remove('hidden');
+                    } else {
+                        thankYouMessage.innerHTML = `<h4>${getTranslation('thank_you_title')}</h4>`;
+                        thankYouMessage.classList.remove('hidden');
+                        googleBtn.classList.add('hidden');
+                        reviewText.classList.add('hidden');
+                    }
+                } catch (error) {
+                    clearInterval(loadingInterval);
+                    loader.classList.add('hidden');
+                    form.classList.remove('hidden');
+                    showNotification('Erreur de connexion au serveur.');
+                    console.error('Fetch error:', error);
                 }
             });
-        }
 
-        // --- Chargement des plats ---
-        async function fetchDishes() {
-            try {
-                const response = await fetch(API_BASE_URL);
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-                
-                dishesContainer.innerHTML = '';
-                for (const category in data) {
-                    const group = document.createElement('div');
-                    group.className = 'category-group';
-                    const title = document.createElement('h3');
-                    title.className = 'category-title';
-                    title.textContent = category;
-                    group.appendChild(title);
-                    
-                    const itemsWrapper = document.createElement('div');
-                    itemsWrapper.className = 'options-grid';
-                    data[category].forEach(dish => {
-                        const button = document.createElement('button');
-                        button.className = 'option-btn';
-                        button.textContent = dish.text;
-                        itemsWrapper.appendChild(button);
-                    });
-                    group.appendChild(itemsWrapper);
-                    dishesContainer.appendChild(group);
-                }
-            } catch (error) {
-                dishesContainer.innerHTML = '<p>Erreur lors du chargement du menu.</p>';
-                console.error('Fetch error:', error);
-            }
-        }
-
-        // --- Gestion de la sélection ---
-        function setupToggleButtons(container) {
-            container.addEventListener('click', e => {
-                if (e.target.classList.contains('option-btn')) {
-                    e.target.classList.toggle('selected');
+            googleBtn.addEventListener('click', () => {
+                if (reviewText.value) {
+                    reviewText.select();
+                    document.execCommand('copy');
+                    showNotification('Texte copié !');
                 }
             });
-        }
 
-        // --- Génération de l'avis ---
-        generateBtn.addEventListener('click', async function () {
-            nextStep(); // Go to the result step
-            
-            const selectedFlavors = Array.from(dishesContainer.querySelectorAll('.option-btn.selected')).map(btn => btn.textContent);
-            const selectedTags = Array.from(tagsContainer.querySelectorAll('.option-btn.selected')).map(btn => btn.textContent);
-
-            loader.style.display = 'block';
-            reviewOutput.style.display = 'none';
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/generate-review`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        rating: selectedRating,
-                        flavors: selectedFlavors,
-                        tags: selectedTags,
-                        customNotes: '' // Le champ de notes n'est pas dans ce design
-                    })
-                });
-                if (!response.ok) throw new Error('API response was not ok');
-                const data = await response.json();
-                reviewOutput.textContent = data.review;
-            } catch (error) {
-                reviewOutput.textContent = "Désolé, une erreur est survenue.";
-                console.error('Generate review error:', error);
-            } finally {
-                loader.style.display = 'none';
-                reviewOutput.style.display = 'block';
-            }
-        });
-
-        // --- Copie du texte ---
-        copyBtn.addEventListener('click', function() {
-            const textarea = document.createElement('textarea');
-            textarea.value = reviewOutput.textContent;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                copyBtn.textContent = 'Copié !';
-                setTimeout(() => { copyBtn.textContent = 'Copier'; }, 2000);
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-            }
-            document.body.removeChild(textarea);
-        });
-
-        // --- Initialisation ---
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchDishes();
-            setupToggleButtons(dishesContainer);
-            setupToggleButtons(tagsContainer);
+            // --- Initialisation ---
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            populateAtmospheres();
+            fetchPublicData();
+            initializeCheckboxGroup('service_qualities');
+            initializeCheckboxGroup('quick_highlight');
+            switchLanguage('fr');
         });
     </script>
-
 </body>
 </html>
